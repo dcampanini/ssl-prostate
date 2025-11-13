@@ -21,11 +21,15 @@ data_seed: 12345
 augmentation_seeds: [0,1,2,3,4,5,6,7]
 ts_fold: 0
 ts_ratio: 0.
-fold_id: 4
+fold_id: 0
+# stage 3 models
+resume: /mnt/researchers/denis-parra/datasets/ssl_prostate_models_diego/stage3_p158/unetr_full_dae_p158f0/ckpts/best_model.pth.tar # step 2
+# stage 2 models (only PICAI)
+#resume: 
 
 # output
-output_dir: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/new_models/${run_name}
-ckpt_dir: ${output_dir}/ckpts
+output_dir: none
+ckpt_dir: none
 
 # data preprocessing
 roi_x: 32
@@ -40,7 +44,7 @@ spatial_dim: 3
 cache_rate: 1.
 num_samples: 1
 image_shape: [32, 256, 256]
-num_channels: 4
+num_channels: 3
 
 # trainer
 trainer_name: SegTrainer
@@ -54,7 +58,7 @@ workers: 8
 num_threads: ${workers}
 # model (2,3) dejar pretrain , resume and start_from vacio
 pretrain: 
-resume: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/final_models_diego/unetr_full_dae_p158f3/ckpts/best_model.pth.tar # step 2
+#resume: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/final_models_diego/unetr_full_dae_p158f1/ckpts/best_model.pth.tar # step 2
 start_from: 
 save_intermediate: false
 

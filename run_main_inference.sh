@@ -9,7 +9,5 @@
 #SBATCH --nodelist ih-loica
 module load conda
 conda activate /mnt/researchers/pablo-estevez/datasets/dcampanini/envs/env_sslprostate3
-#python main.py configs/unetr_prostate_p158_f0_inference.yaml
 # inference
 python main.py configs/unetr_prostate_p158_f0_inference.yaml
-
