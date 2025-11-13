@@ -1,0 +1,110 @@
+# architecture
+arch: vit_base
+enc_arch: ViTBackbone
+dec_arch: UNETR_decoder
+
+# wandb
+proj_name: UNETR3DFusion
+run_name: unetr3dfusion
+wandb_id: 
+disable_wandb: 0
+
+# dataset
+dataset: prostate
+# data_path: /data/leizhou/
+task: Task2208_picai_prostate158
+data_path: /mnt/workspace/jfacuse/prostate/workdir/nnUNet_raw_data/${task}
+overviews_dir: /mnt/workspace/jfacuse/prostate/workdir/results/UNet/overviews/${task}
+json_list: 'split0.json'
+data_seed: 12345
+augmentation_seeds: [0,1,2,3,4,5,6,7]
+ts_fold: 0
+ts_ratio: 0.
+
+# output
+output_dir: /mnt/workspace/jfacuse/test_MedMAE/${run_name}
+ckpt_dir: ${output_dir}/ckpts
+
+# data preprocessing
+roi_x: 32
+roi_y: 256
+roi_z: 256
+RandFlipd_prob: 0.2
+RandRotate90d_prob: 0.2
+RandScaleIntensityd_prob: 0.1
+RandShiftIntensityd_prob: 0.1
+infer_overlap: 0.5
+spatial_dim: 3
+cache_rate: 1.
+num_samples: 1
+image_shape: [32, 256, 256]
+num_channels: 3
+channel: all
+
+# trainer
+trainer_name: SegTrainer
+batch_size: 2
+start_epoch: 0
+warmup_epochs: 10
+epochs: 400
+workers: 8
+num_threads: ${workers}
+pretrain: /mnt/workspace/jfacuse/test_MedMAE/single_channel_unetr/ckpts/best_model.pth.tar
+resume: #/mnt/workspace/jfacuse/test_MedMAE/unetrfusion_enc_hiddenstates/ckpts/checkpoint_0049.pth.tar
+
+# drop
+drop_path: 0.1
+# tricks
+mixup: 0.
+cutmix: 0.
+label_smoothing: 0.
+
+# model
+patch_size: 16
+in_chans: 1
+feature_size: 16
+encoder_embed_dim: 768
+encoder_depth: 12
+encoder_num_heads: 12
+fusion_depth: 2
+encode_hidden_states: true
+
+# loss
+smooth_nr: 0.0
+smooth_dr: 1e-6
+
+# optimizer
+type: adamw
+lr: 5.1e-3 # 1.1e-2
+beta1: 0.9
+beta2: 0.95 #0.999
+weight_decay: 0.05 #1e-5
+layer_decay: 0.75
+
+# logging
+# vis_freq: 100
+vis_batch_size: 4
+save_freq: 50
+eval_freq: 10
+print_freq: 3
+
+# distributed processing
+gpu: 0
+dist_url: # 'tcp://localhost:10001'
+world_size: 1
+multiprocessing_distributed: false
+dist_backend: nccl
+distributed:
+rank: 0
+ngpus_per_node:
+
+# randomness
+seed:
+
+# debugging
+debug: false
+manual_test: false
+get_best_model: false
+
+num_classes: 2
+out_chans: 2
