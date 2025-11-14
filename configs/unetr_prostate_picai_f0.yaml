@@ -5,7 +5,7 @@ dec_arch: UNETR_decoder
 
 # wandb
 proj_name: UNETR3D
-run_name: stage2_stage1_unetr_dae_picai_f0
+run_name: stage2_stage1_unetr_byol_dae_picai_f0
 wandb_id: 
 disable_wandb: 0
 wandb_proj: SEG_PICAI
@@ -24,7 +24,7 @@ ts_ratio: 0.
 fold_id: 0
 
 # output
-output_dir: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/new_models/${run_name}
+output_dir: /mnt/researchers/denis-parra/datasets/ssl_prostate_models_diego/stage2/${run_name}
 ckpt_dir: ${output_dir}/ckpts
 
 # data preprocessing
@@ -53,7 +53,7 @@ epochs: 500 # 500 original
 workers: 8
 num_threads: ${workers}
 # model (2,3) dejar pretrain , resume and start_from vacio
-pretrain: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/new_models/stage1_unetr_dae/ckpts/checkpoint_0299.pth.tar # step 2
+pretrain: /mnt/researchers/denis-parra/datasets/ssl_prostate_models_diego/stage1/unetr_byol_dae/ckpts/checkpoint_0299.pth.tar # step 2
 resume: 
 start_from: 
 save_intermediate: false
