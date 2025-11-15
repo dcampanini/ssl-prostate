@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name ssl-prostate          # Custom name
+#SBATCH --job-name inference-ssl-prostate          # Custom name
 #SBATCH -t 3-00:00:00
 #SBATCH -p batch                                # Choose partition (interactive or batch)
 #SBATCH -q batch                                # Choose QoS, must be same as partition
@@ -10,4 +10,4 @@
 module load conda
 conda activate /mnt/researchers/pablo-estevez/datasets/dcampanini/envs/env_sslprostate3
 # inference
-python main.py configs/unetr_prostate_p158_f0_inference.yaml
+python main.py configs/unetr/unetr_prostate_p158_f0_inference.yaml

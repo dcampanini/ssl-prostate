@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name stage1-prostate          # Custom name
+#SBATCH --job-name stage2-prostate          # Custom name
 #SBATCH -t 3-00:00:00
 #SBATCH -p batch                                # Choose partition (interactive or batch)
 #SBATCH -q batch                                # Choose QoS, must be same as partition

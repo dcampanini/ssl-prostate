@@ -11,6 +11,7 @@ sys.path.append('lib/')
 
 from lib.utils import set_seed, dist_setup, get_conf
 import lib.trainers as trainers
+from datetime import datetime
 
 
 def main():
@@ -47,6 +48,13 @@ def main_worker(gpu, args):
     args.gpu = gpu
     ngpus_per_node = args.ngpus_per_node
     dist_setup(ngpus_per_node, args)
+
+    now = datetime.now()
+    dt_string = now.strftime("%d-%m-%Y_%H:%M:%S")
+    dt_string = dt_string.replace(":","_")
+
+    args.output_dir = f"{args.output_dir}_{dt_string}"
+    args.ckpt_dir = args.output_dir
 
     # init trainer
     trainer_class = getattr(trainers, f'{args.trainer_name}', None)
