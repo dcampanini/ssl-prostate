@@ -5,7 +5,7 @@ dec_arch: UNETR_decoder
 
 # wandb
 proj_name: UNETR3D
-run_name: unetr_contrastive_mae_picai_f0
+run_name: none
 wandb_id: 
 disable_wandb: 1
 wandb_proj: SEG_PICAI
@@ -21,12 +21,11 @@ data_seed: 12345
 augmentation_seeds: [0,1,2,3,4,5,6,7]
 ts_fold: 0
 ts_ratio: 0.
-fold_id: 0
+fold_id: 2
 # stage 3 models
 #resume: /mnt/researchers/denis-parra/datasets/ssl_prostate_models_diego/stage3_p158/unetr_full_dae_p158f0/ckpts/best_model.pth.tar # step 2
 # stage 2 models (only PICAI)
-resume: /mnt/researchers/denis-parra/datasets/ssl_prostate_models_diego/stage2/stage2_stage1_unetr_byol_dae_picai_f0_14-11-2025_19_32_14/best_model.pth.tar
-
+resume: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/models/unetr/unetr_contrastive_mae_picai/ckpts/best_model.pth.tar
 # output
 output_dir: none
 ckpt_dir: none
@@ -113,7 +112,7 @@ seed:
 debug: false
 manual_test: false
 get_best_model: false
-evaluate: True # false to train, true for inference
+evaluate: true # false to train, true for inference
 
 num_classes: 2
 out_chans: 2
