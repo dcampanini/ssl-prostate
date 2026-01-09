@@ -53,7 +53,7 @@ epochs: 500
 workers: 8
 num_threads: ${workers}
 pretrain: 
-resume: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/models/unet_mae_picai_seg/ckpts/best_model.pth.tar
+resume: 
 start_from: 
 save_intermediate: false
 

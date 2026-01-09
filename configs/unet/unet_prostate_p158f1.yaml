@@ -5,7 +5,7 @@ dec_arch:
 
 # wandb
 proj_name: UNet
-run_name: unet_contrastive_mae_p158_f1
+run_name: unet_scratch_p158_f1
 wandb_id: 
 disable_wandb: 0
 wandb_proj: UNETR3D_p158
@@ -14,8 +14,8 @@ wandb_proj: UNETR3D_p158
 dataset: prostate
 # data_path: /data/leizhou/
 task: Task2401_p158_prostate
-data_path: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/nnUNet_raw_data/${task}
-overviews_dir: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/overviews/UNet/overviews/${task}
+data_path:  /workspace1/project_jxfdv/ssl_prostate_data/nnUNet_raw_data/${task}
+overviews_dir: /workspace1/project_jxfdv/ssl_prostate_data/overviews/UNet/overviews/${task}
 json_list: 'split0.json'
 data_seed: 12345
 augmentation_seeds: [0,1,2,3,4,5,6,7]
@@ -24,7 +24,7 @@ ts_ratio: 0.
 fold_id: 1
 
 # output
-output_dir: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/models/${run_name}
+output_dir: /home/aetamayo/aetamayo_outputs/unet_stage3_p158/${run_name}
 ckpt_dir: ${output_dir}/ckpts
 
 # data preprocessing
@@ -54,7 +54,7 @@ workers: 8
 num_threads: ${workers}
 pretrain: 
 resume: 
-start_from: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/models/unet_contrastive_mae_picai_f0/ckpts/best_model.pth.tar
+start_from: 
 # drop
 drop_path: 0.1
 # tricks
