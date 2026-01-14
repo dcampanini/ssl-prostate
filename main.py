@@ -80,6 +80,7 @@ def main_worker(gpu, args):
     
     # load weights and epochs
     # resume training
+    #import pdb; pdb.set_trace()
     if args.resume:
         trainer.resume()
     # se usa en step 3 (para modelos que pasaron por el step  2)

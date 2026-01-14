@@ -14,8 +14,8 @@ wandb_proj: UNET_p158
 dataset: prostate
 # data_path: /data/leizhou/
 task: Task2401_p158_prostate
-data_path: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/nnUNet_raw_data/${task}
-overviews_dir: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/overviews/UNet/overviews/${task}
+data_path:  /workspace1/project_jxfdv/ssl_prostate_data/nnUNet_raw_data/${task}
+overviews_dir: /workspace1/project_jxfdv/ssl_prostate_data/overviews/UNet/overviews/${task}
 json_list: 'split0.json'
 data_seed: 12345
 augmentation_seeds: [0,1,2,3,4,5,6,7]

@@ -1,5 +1,18 @@
 # SelfMedMAE: Self Pre-training with Masked Autoencoders for Medical Image Analysis
 
+### Stept to create the environment 
+
+conda create --name env_sslprostate python=3.10.18 -y
+conda activate env_sslprostate
+pip install -r requirements.txt
+
+Go to the second repo ssl-prostate_picai_baseline
+
+pip install -e .
+
+
+
+
 ### Preparation
 
 1. Install PyTorch, timm and [MONAI](https://monai.io/index.html).

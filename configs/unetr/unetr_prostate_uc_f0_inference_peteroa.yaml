@@ -1,31 +1,33 @@
 # architecture
-arch: UNet
-enc_arch: 
-dec_arch: 
+arch: vit_base
+enc_arch: ViTBackbone
+dec_arch: UNETR_decoder
 
 # wandb
-proj_name: UNet
-run_name: unet_contrastive_mae_picai_f0
-wandb_id: tayytuc2
+proj_name: UNETR3D
+run_name: unetr_contrastive_mae_uc_fold0
+wandb_id: 
 disable_wandb: 1
-wandb_proj: SEG_PICAI
+wandb_proj: UNETR3D_uc_picai
 
 # dataset
 dataset: prostate
 # data_path: /data/leizhou/
-task: Task2201_picai
-data_path: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/nnUNet_raw_data/${task}
-overviews_dir: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/overviews/UNet/overviews/${task}
+task: Task2301_uc_prostate
+data_path:  /workspace1/project_jxfdv/ssl_prostate_data/nnUNet_raw_data/${task}
+overviews_dir: /workspace1/project_jxfdv/ssl_prostate_data/overviews/UNet/overviews/${task}
 json_list: 'split0.json'
 data_seed: 12345
 augmentation_seeds: [0,1,2,3,4,5,6,7]
 ts_fold: 0
 ts_ratio: 0.
-fold_id: 0
+fold_id: 4
+resume: /home/dicampanini/unetr_uc/unetr_only_byol_solo_uc_fold4/ckpts/best_model.pth.tar
 
 # output
-output_dir: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/models/${run_name}
-ckpt_dir: ${output_dir}/ckpts
+output_dir: none
+ckpt_dir: none
+
 
 # data preprocessing
 roi_x: 32
@@ -49,11 +51,11 @@ val_batch_size: 1 # per gpu
 use_test_augmentation: false
 start_epoch: 0
 warmup_epochs: 10
-epochs: 500
+epochs: 200
 workers: 8
 num_threads: ${workers}
 pretrain: 
-resume: 
+#resume: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/models/unetr_only_contrastive_mae_uc_fold4/ckpts/best_model.pth.tar
 start_from: 
 save_intermediate: false
 
@@ -67,9 +69,10 @@ label_smoothing: 0.
 # model
 patch_size: 16
 in_chans: 3
-out_chans: 2
-model_strides: [[2, 2, 2], [1, 2, 2], [1, 2, 2], [1, 2, 2], [2, 2, 2]]
-model_features: [32, 64, 128, 256, 512, 1024]
+feature_size: 16
+encoder_embed_dim: 768
+encoder_depth: 12
+encoder_num_heads: 12
 
 # loss
 smooth_nr: 0.0
@@ -77,17 +80,18 @@ smooth_dr: 1e-6
 
 # optimizer
 type: adamw
-lr: 1.1e-2
+lr: 0.011
 beta1: 0.9
 beta2: 0.95 #0.999
-weight_decay: 0.05 #1e-5
+weight_decay: 0.1 #1e-5
 layer_decay: 0.75
+start_from_lr: 
 
 # logging
 # vis_freq: 100
 vis_batch_size: 4
-save_freq: 50
-eval_freq: 50
+save_freq: 5
+eval_freq: 5
 print_freq: 3
 
 # distributed processing
@@ -101,15 +105,16 @@ rank: 0
 ngpus_per_node:
 
 # randomness
-seed:
+seed: 
 
 # debugging
 debug: false
 manual_test: false
 get_best_model: false
-evaluate: true
+evaluate: true # false to train, true for inference
 
 num_classes: 2
+out_chans: 2
 
 # ensemble testing
 eval_test: false
