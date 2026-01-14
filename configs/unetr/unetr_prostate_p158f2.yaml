@@ -5,7 +5,7 @@ dec_arch: UNETR_decoder
 
 # wandb
 proj_name: UNETR3D
-run_name: unetr_full_byol_dae_p158f2
+run_name: unetr_scratch_p158f2
 wandb_id: 
 disable_wandb: 0
 wandb_proj: UNETR3D_p158
@@ -24,7 +24,7 @@ ts_ratio: 0.
 fold_id: 2
 
 # output
-output_dir: /mnt/researchers/denis-parra/datasets/ssl_prostate_models_diego/stage3_p158/${run_name}
+output_dir: /mnt/researchers/denis-parra/datasets/ssl_prostate_models_diego/unetr_p158/stage3_p158/${run_name}
 ckpt_dir: 
 
 # data preprocessing
@@ -49,12 +49,12 @@ val_batch_size: 1 # per gpu
 use_test_augmentation: false
 start_epoch: 0
 warmup_epochs: 10
-epochs: 40
+epochs: 100
 workers: 8
 num_threads: ${workers}
-pretrain: 
-resume: 
-start_from: /mnt/researchers/denis-parra/datasets/ssl_prostate_models_diego/stage2/stage2_stage1_unetr_byol_dae_picai_f0_14-11-2025_19_32_14/best_model.pth.tar
+pretrain: #/mnt/researchers/denis-parra/datasets/ssl_prostate_models_diego/unetr_p158/stage1/unetr_stage1_mae_07-01-2026_01_41_52/checkpoint_0199.pth.tar # para modelos (1,3)
+resume:  # solo se usa para resumir un train
+start_from: #/mnt/researchers/denis-parra/datasets/ssl_prostate_models_diego/unetr_p158/stage2/unetr_(1-2)_mae_picai_f0_08-01-2026_00_59_14/best_model.pth.tar # para modelos (2,3) ; (1,2,3)
 save_intermediate: false
 
 # drop
@@ -88,7 +88,7 @@ start_from_lr:
 # logging
 # vis_freq: 100
 vis_batch_size: 1
-save_freq: 100
+save_freq: 1
 eval_freq: 1
 print_freq: 1
 

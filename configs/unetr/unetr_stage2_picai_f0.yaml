@@ -1,20 +1,20 @@
 # architecture
-arch: UNet
-enc_arch: 
-dec_arch: 
+arch: vit_base
+enc_arch: ViTBackbone
+dec_arch: UNETR_decoder
 
 # wandb
-proj_name: UNet
-run_name: unet_contrastive_mae_uc_f0
+proj_name: UNETR3D
+run_name: unetr_(1-2)_sclr_mae_picai_f0
 wandb_id: 
 disable_wandb: 0
-wandb_proj: UNETR3D_uc_picai
+wandb_proj: SEG_PICAI
 
 # dataset
 dataset: prostate
 # data_path: /data/leizhou/
-task: Task2301_uc_prostate
-data_path: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/nnUNet_raw_data/${task}
+task: Task2201_picai
+data_path:  /mnt/researchers/denis-parra/datasets/jfacuse_workdir/nnUNet_raw_data/${task}
 overviews_dir: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/overviews/UNet/overviews/${task}
 json_list: 'split0.json'
 data_seed: 12345
@@ -24,8 +24,8 @@ ts_ratio: 0.
 fold_id: 0
 
 # output
-output_dir: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/models/${run_name}
-ckpt_dir: ${output_dir}/ckpts
+output_dir: /mnt/researchers/denis-parra/datasets/ssl_prostate_models_diego/stage2/${run_name}
+ckpt_dir: 
 
 # data preprocessing
 roi_x: 32
@@ -45,17 +45,19 @@ num_channels: 3
 # trainer
 trainer_name: SegTrainer
 batch_size: 2
-val_batch_size: 1 # per gpu
+val_batch_size: 2 # per gpu
 use_test_augmentation: false
 start_epoch: 0
 warmup_epochs: 10
-epochs: 200
+epochs: 500 # 500 original
 workers: 8
 num_threads: ${workers}
-pretrain: 
+# model (2,3) dejar pretrain , resume and start_from vacio
+pretrain: /mnt/researchers/denis-parra/datasets/ssl_prostate_models_diego/unetr_p158/stage1/unetr_stage1_sclr_mae_08-01-2026_15_29_32/checkpoint_0099.pth.tar # step 2
 resume: 
-start_from: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/models/unet_contrastive_mae_picai_f0/ckpts/best_model.pth.tar
+start_from: 
 save_intermediate: false
+
 # drop
 drop_path: 0.1
 # tricks
@@ -66,9 +68,10 @@ label_smoothing: 0.
 # model
 patch_size: 16
 in_chans: 3
-out_chans: 2
-model_strides: [[2, 2, 2], [1, 2, 2], [1, 2, 2], [1, 2, 2], [2, 2, 2]]
-model_features: [32, 64, 128, 256, 512, 1024]
+feature_size: 16
+encoder_embed_dim: 768
+encoder_depth: 12
+encoder_num_heads: 12
 
 # loss
 smooth_nr: 0.0
@@ -81,14 +84,13 @@ beta1: 0.9
 beta2: 0.95 #0.999
 weight_decay: 0.05 #1e-5
 layer_decay: 0.75
-start_from_lr: 
 
 # logging
 # vis_freq: 100
-vis_batch_size: 4
-save_freq: 5
-eval_freq: 5
-print_freq: 3
+vis_batch_size: 1
+save_freq: 1 # to save checkpoints to disk every N epochs
+eval_freq: 1 # to evaluate and save the model to disk every every N epochs if the model is better than the previous model
+print_freq: 1
 
 # distributed processing
 gpu: 0
@@ -101,18 +103,19 @@ rank: 0
 ngpus_per_node:
 
 # randomness
-seed: 5
+seed:
 
 # debugging
 debug: false
 manual_test: false
 get_best_model: false
-evaluate: false
+evaluate: false # false to train, true for inference
 
 num_classes: 2
+out_chans: 2
 
 # ensemble testing
 eval_test: false
 models_root_dir: 
-models_to_ensemble: [] # Aqui deben ser los nombres de las run. dae pueden ser del mismo tipo de arquitectura
+models_to_ensemble: [] # Aqui deben ser los nombres de las run. Solo pueden ser del mismo tipo de arquitectura
 metrics_save_path: 

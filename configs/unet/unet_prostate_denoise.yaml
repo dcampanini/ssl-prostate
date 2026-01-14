@@ -4,12 +4,12 @@ enc_arch:
 dec_arch: 
 
 # wandb
-proj_name: denoise_picai
+proj_name: unet_stage1_dae_picai50
 model_name: UNet
-run_name: ${proj_name}_${arch}_${dataset}
+run_name: ${proj_name}
 wandb_id: 
-disable_wandb: 
 wandb_proj: denoise_prostate
+disable_wandb: 0
 
 # dataset
 dataset: prostate
@@ -17,14 +17,16 @@ task: Task2201_picai
 #overview_task: Task2210_picai_prostate158_only_negative #Para entrenar denoise
 overview_task: Task2201_picai #Para evaluar
 data_path: /mnt/workspace/jfacuse/prostate/workdir/nnUNet_raw_data/${task}
-overviews_dir: /mnt/workspace/jfacuse/prostate/workdir/results/UNet/overviews/${overview_task}
-overviews_valid_dir: /mnt/workspace/jfacuse/prostate/workdir/results/UNet/overviews/${task}
+# overviews_dir: /mnt/workspace/jfacuse/prostate/workdir/results/UNet/overviews/${overview_task}
+# overviews_valid_dir: /mnt/workspace/jfacuse/prostate/workdir/results/UNet/overviews/${task}
+overviews_dir: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/overviews/UNet/overviews/Task2201_picai_50
+overviews_valid_dir: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/overviews/UNet/overviews/Task2201_picai_50
 json_list: 'dataset2.json'
 data_seed: 12345
 ts_fold: 0
 
 # output
-output_dir: /mnt/workspace/jfacuse/test_MedMAE_picai/${run_name}
+output_dir: /mnt/researchers/denis-parra/datasets/ssl_prostate_models_diego/unetr_uc/stage1_dev/${run_name}
 ckpt_dir: ${output_dir}/ckpts
 
 # data preprocessing
@@ -43,6 +45,7 @@ num_channels: 3
 # trainer
 trainer_name: DenoiseTrainer
 batch_size: 2
+val_batch_size: 1 # per gpu
 vis_batch_size: 1
 start_epoch: 0
 warmup_epochs: 10
@@ -89,12 +92,12 @@ beta2: 0.95
 weight_decay: 0.05
 
 # logging
-vis_freq: 10
+vis_freq: 1
 save_freq: 100
-print_freq: 5
+print_freq: 1
 
 # distributed processing
-gpu: 2
+gpu: 0
 dist_url: # 'tcp://localhost:10001'
 world_size: 1
 multiprocessing_distributed: false
@@ -110,3 +113,9 @@ seed:
 debug: false
 
 num_classes: 2
+
+# ensemble testing
+eval_test: false
+models_root_dir: 
+models_to_ensemble: [] # Aqui deben ser los nombres de las run. Solo pueden ser del mismo tipo de arquitectura
+metrics_save_path: 

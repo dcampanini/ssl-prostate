@@ -1,31 +1,32 @@
 # architecture
-arch: vit_base
-enc_arch: ViTBackbone
-dec_arch: UNETR_decoder
+arch: UNet
+enc_arch: 
+dec_arch: 
 
 # wandb
-proj_name: UNETR3D
-run_name: stage2_stage1_unetr_byol_dae_picai_f0
+proj_name: UNet
+run_name: unet_(2,3)_p158_f0
 wandb_id: 
-disable_wandb: 0
-wandb_proj: SEG_PICAI
+disable_wandb: 1
+wandb_proj: UNET3D_p158
 
 # dataset
 dataset: prostate
 # data_path: /data/leizhou/
-task: Task2201_picai
-data_path:  /mnt/researchers/denis-parra/datasets/jfacuse_workdir/nnUNet_raw_data/${task}
+task: Task2401_p158_prostate
+data_path: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/nnUNet_raw_data/${task}
 overviews_dir: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/overviews/UNet/overviews/${task}
 json_list: 'split0.json'
 data_seed: 12345
 augmentation_seeds: [0,1,2,3,4,5,6,7]
 ts_fold: 0
 ts_ratio: 0.
-fold_id: 0
+fold_id: 1
+resume: /mnt/researchers/denis-parra/datasets/aetamayo/outputs/stage3_p158/unet_(2,3)_p158_f1/best_model.pth.tar
 
 # output
-output_dir: /mnt/researchers/denis-parra/datasets/ssl_prostate_models_diego/stage2/${run_name}
-ckpt_dir: 
+output_dir: none
+ckpt_dir: none
 
 # data preprocessing
 roi_x: 32
@@ -45,33 +46,30 @@ num_channels: 3
 # trainer
 trainer_name: SegTrainer
 batch_size: 2
-val_batch_size: 2 # per gpu
+val_batch_size: 1 # per gpu
 use_test_augmentation: false
 start_epoch: 0
 warmup_epochs: 10
-epochs: 500 # 500 original
+epochs: 40
 workers: 8
 num_threads: ${workers}
-# model (2,3) dejar pretrain , resume and start_from vacio
-pretrain: /mnt/researchers/denis-parra/datasets/ssl_prostate_models_diego/stage1/unetr_byol_dae/ckpts/checkpoint_0299.pth.tar # step 2
-resume: 
+pretrain: 
+#resume: 
 start_from: 
-save_intermediate: false
-
 # drop
 drop_path: 0.1
 # tricks
 mixup: 0.
 cutmix: 0.
 label_smoothing: 0.
+save_intermediate: false
 
 # model
 patch_size: 16
 in_chans: 3
-feature_size: 16
-encoder_embed_dim: 768
-encoder_depth: 12
-encoder_num_heads: 12
+out_chans: 2
+model_strides: [[2, 2, 2], [1, 2, 2], [1, 2, 2], [1, 2, 2], [2, 2, 2]]
+model_features: [32, 64, 128, 256, 512, 1024]
 
 # loss
 smooth_nr: 0.0
@@ -84,12 +82,13 @@ beta1: 0.9
 beta2: 0.95 #0.999
 weight_decay: 0.05 #1e-5
 layer_decay: 0.75
+start_from_lr: 
 
 # logging
 # vis_freq: 100
 vis_batch_size: 1
-save_freq: 100 # to save checkpoints to disk every N epochs
-eval_freq: 1 # to evaluate and save the model to disk every every N epochs if the model is better than the previous model
+save_freq: 1
+eval_freq: 1
 print_freq: 1
 
 # distributed processing
@@ -103,16 +102,15 @@ rank: 0
 ngpus_per_node:
 
 # randomness
-seed:
+seed: 5
 
 # debugging
 debug: false
 manual_test: false
 get_best_model: false
-evaluate: false # false to train, true for inference
+evaluate: True
 
 num_classes: 2
-out_chans: 2
 
 # ensemble testing
 eval_test: false

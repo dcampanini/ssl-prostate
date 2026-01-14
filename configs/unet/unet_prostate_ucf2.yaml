@@ -5,10 +5,10 @@ dec_arch:
 
 # wandb
 proj_name: UNet
-run_name: unet_contrastive_mae_uc_f2
+run_name: unet_(2-3)_uc_f2
 wandb_id: 
 disable_wandb: 0
-wandb_proj: UNETR3D_uc_picai
+wandb_proj: UNET3D_uc_picai
 
 # dataset
 dataset: prostate
@@ -24,7 +24,7 @@ ts_ratio: 0.
 fold_id: 2
 
 # output
-output_dir: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/models/${run_name}
+output_dir: /mnt/researchers/denis-parra/datasets/aetamayo/outputs/stage3_uc/${run_name}
 ckpt_dir: ${output_dir}/ckpts
 
 # data preprocessing
@@ -49,12 +49,12 @@ val_batch_size: 1 # per gpu
 use_test_augmentation: false
 start_epoch: 0
 warmup_epochs: 10
-epochs: 200
+epochs: 40
 workers: 8
 num_threads: ${workers}
 resume:
 pretrain: 
-start_from: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/models/unet_contrastive_mae_picai_f0/ckpts/best_model.pth.tar
+start_from: /mnt/researchers/denis-parra/datasets/aetamayo/outputs/stage2/unet_(2)_picai_f0/ckpts/best_model.pth.tar
 save_intermediate: false
 # drop
 drop_path: 0.1
