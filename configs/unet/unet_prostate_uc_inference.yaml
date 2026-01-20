@@ -5,7 +5,7 @@ dec_arch:
 
 # wandb
 proj_name: UNet
-run_name: unet_uc-inference_f0
+run_name: unet_uc-inference
 wandb_id: 
 disable_wandb: 1
 wandb_proj: 
@@ -22,8 +22,10 @@ augmentation_seeds: [0,1,2,3,4,5,6,7]
 ts_fold: 0
 ts_ratio: 0.
 fold_id: 4
-resume: /mnt/researchers/denis-parra/datasets/aetamayo/outputs/stage3_uc/unet_(2-3)_uc_f1_12-01-2026_02_22_02/best_model.pth.tar
-
+resume: /mnt/researchers/denis-parra/datasets/aetamayo/outputs/stage3_uc/unet_(1-3)_dae_uc_f4_picai25_14-01-2026_18_36_37/best_model.pth.tar
+# /mnt/researchers/denis-parra/datasets/aetamayo/outputs/stage3_uc/unet_(1-3)_dae_uc_f2_picai25_14-01-2026_18_36_37/best_model.pth.tar
+# /mnt/researchers/denis-parra/datasets/aetamayo/outputs/stage3_uc/unet_(1-3)_dae_uc_f3_picai25_14-01-2026_18_36_38/best_model.pth.tar
+# /mnt/researchers/denis-parra/datasets/aetamayo/outputs/stage3_uc/unet_(1-3)_dae_uc_f4_picai25_14-01-2026_18_36_37/best_model.pth.tar
 # output
 output_dir: none
 ckpt_dir: none
