@@ -16,17 +16,19 @@ conda activate /mnt/researchers/pablo-estevez/datasets/dcampanini/envs/env_sslpr
 # exec -a f3 python main.py configs/unetr/unetr_prostate_p158f3.yaml &
 # exec -a f4 python main.py configs/unetr/unetr_prostate_p158f4.yaml &
 # wait
+
 # unet uc
-# exec -a f0 python main.py configs/unet/unet_prostate_ucf0.yaml &
-# exec -a f1 python main.py configs/unet/unet_prostate_ucf1.yaml &
-# exec -a f2 python main.py configs/unet/unet_prostate_ucf2.yaml &
-# exec -a f3 python main.py configs/unet/unet_prostate_ucf3.yaml &
-# exec -a f4 python main.py configs/unet/unet_prostate_ucf4.yaml &
+exec -a f0 python main.py configs/unet/unet_prostate_ucf0.yaml &
+exec -a f1 python main.py configs/unet/unet_prostate_ucf1.yaml &
+exec -a f2 python main.py configs/unet/unet_prostate_ucf2.yaml &
+exec -a f3 python main.py configs/unet/unet_prostate_ucf3.yaml &
+exec -a f4 python main.py configs/unet/unet_prostate_ucf4.yaml &
+
 # unet p158
 #exec -a f0 python main.py configs/unet/unet_prostate_p158f0.yaml #&
 #exec -a f1 python main.py configs/unet/unet_prostate_p158f1.yaml #&
 #exec -a f2 python main.py configs/unet/unet_prostate_p158f2.yaml #&
 #exec -a f3 python main.py configs/unet/unet_prostate_p158f3.yaml #&
-exec -a f4 python main.py configs/unet/unet_prostate_p158f4.yaml #&
-#wait
+#exec -a f4 python main.py configs/unet/unet_prostate_p158f4.yaml #&
+wait
 

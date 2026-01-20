@@ -598,6 +598,10 @@ class SegTrainer(BaseTrainer):
                             y_true=iter(final_target),
                             y_det_postprocess_func=lambda pred: extract_lesion_candidates(pred)[0])
                 print('Metrics for fold_id : ', args.fold_id)
+                print('data_path =',args.data_path)
+                print('overviews_dir =',args.overviews_dir)
+                print('conf_file =',args.conf_file)
+                print('resume model =', args.resume)
                 print(valid_metrics)
             except:
                 print('Valid Failed! Printing preds')
