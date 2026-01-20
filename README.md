@@ -2,14 +2,31 @@
 
 ### Stept to create the environment 
 
+
+ - Clone repository
+```
+git clone  https://github.com/dcampanini/ssl-prostate_picai_baseline.git
+```
+
+ - Create a Conda virtual environment:
+```
 conda create --name env_sslprostate python=3.10.18 -y
+```
+
+ - Activate the Conda virtual environment:
+```
 conda activate env_sslprostate
+```
+
+ - Install requirements :
+```
 pip install -r requirements.txt
+```
 
-Go to the second repo ssl-prostate_picai_baseline
-
+- Go to the second repo ssl-prostate_picai_baseline
+```
 pip install -e .
-
+```
 
 
 

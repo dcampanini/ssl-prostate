@@ -588,6 +588,7 @@ class SegTrainer(BaseTrainer):
             print(f'==> Evaluating on the {i+1}th batch is finished.')
         
         if args.dataset == 'prostate':
+            #import pdb;pdb.set_trace()
             # Juntamos las preds y las mandamos a evaluate de picai
             try:
                 final_det = np.concatenate([x for x in np.array(all_valid_preds)], axis=0)
@@ -598,6 +599,11 @@ class SegTrainer(BaseTrainer):
                             y_true=iter(final_target),
                             y_det_postprocess_func=lambda pred: extract_lesion_candidates(pred)[0])
                 print('Metrics for fold_id : ', args.fold_id)
+                print('data_path =',args.data_path)
+                print('overviews_dir =',args.overviews_dir)
+                print('conf_file =',args.conf_file)
+                print('resume model =', args.resume)
+                #import pdb;pdb.set_trace()
                 print(valid_metrics)
             except:
                 print('Valid Failed! Printing preds')

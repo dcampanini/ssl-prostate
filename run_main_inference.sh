@@ -10,7 +10,7 @@
 module load conda
 conda activate /mnt/researchers/pablo-estevez/datasets/dcampanini/envs/env_sslprostate3
 # inference
-#python main.py configs/unetr/unetr_prostate_p158f0_inference.yaml
-python main.py configs/unet/unet_prostate_p158f0_inference.yaml
+python main.py configs/unetr/unetr_prostate_p158f0_inference.yaml
+#python main.py configs/unet/unet_prostate_p158f0_inference.yaml
 #python main.py configs/unetr/unetr_prostate_uc_f0_inference.yaml
 #python main.py configs/unet/unet_prostate_uc_inference.yaml

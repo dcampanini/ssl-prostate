@@ -16,6 +16,7 @@ def subset(k):
 
 
 #%
+save = False
 train_file = '/home/dcampanini/datasets/ssl_prostate_data/overviews/UNet/overviews/Task2201_picai/PI-CAI_train-fold-0.json'
 
 with open(train_file, "r", encoding="utf-8") as f:
@@ -49,10 +50,11 @@ splits = {
 # %%
 print('original total data = ', n)
 output= "/home/dcampanini/datasets/ssl_prostate_data/overviews/UNet/overviews"
-for k, split_data in splits.items():
-    print('spit data', k,'total data =',len(split_data['pat_ids']))
-    output_path = f"{output}/Task2201_picai_{str(k)}/PI-CAI_train-fold-0.json"
-    with open(output_path, "w") as f:
-        json.dump(split_data, f, indent=4)
+if save:
+    for k, split_data in splits.items():
+        print('spit data', k,'total data =',len(split_data['pat_ids']))
+        output_path = f"{output}/Task2201_picai_{str(k)}/PI-CAI_train-fold-0.json"
+        with open(output_path, "w") as f:
+            json.dump(split_data, f, indent=4)
 
 # %%

@@ -14,8 +14,8 @@ wandb_proj: SEG_PICAI
 dataset: prostate
 # data_path: /data/leizhou/
 task: Task2401_p158_prostate
-data_path:  /mnt/researchers/denis-parra/datasets/jfacuse_workdir/nnUNet_raw_data/${task}
-overviews_dir: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/overviews/UNet/overviews/${task}
+data_path:  /home/dcampanini/datasets/ssl_prostate_data/nnUNet_raw_data/${task}
+overviews_dir: /home/dcampanini/datasets/ssl_prostate_data/overviews/UNet/overviews/${task}
 json_list: 'split0.json'
 data_seed: 12345
 augmentation_seeds: [0,1,2,3,4,5,6,7]
@@ -25,7 +25,8 @@ fold_id: 0
 # stage 3 models
 #resume: /mnt/researchers/denis-parra/datasets/ssl_prostate_models_diego/stage3_p158/unetr_full_dae_p158f0/ckpts/best_model.pth.tar # step 2
 # stage 2 models (only PICAI)
-resume: /mnt/researchers/denis-parra/datasets/ssl_prostate_models_diego/unetr_p158/stage2/unetr_(1-2)_sclr_mae_picai_f0_12-01-2026_00_57_31/best_model.pth.tar
+#resume: /mnt/researchers/denis-parra/datasets/ssl_prostate_models_diego/unetr_p158/stage2/unetr_(1-2)_sclr_mae_picai_f0_12-01-2026_00_57_31/best_model.pth.tar
+resume: /home/dcampanini/ssl_prostate_models_diego/unetr_p158/stage3_p158/unetr_full_dae_p158f0/ckpts/best_model.pth.tar
 # output
 output_dir: none
 ckpt_dir: none
