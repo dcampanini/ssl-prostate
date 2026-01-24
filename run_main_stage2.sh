@@ -9,7 +9,9 @@
 #SBATCH --nodelist ih-condor
 module load conda
 conda activate /mnt/researchers/pablo-estevez/datasets/dcampanini/envs/env_sslprostate3
-exec -a stage2  python main.py configs/unet/unet_prostate_picai_f0.yaml
+exec -a stage2 python main.py configs/unet/unet_prostate_picai_f0_server79.yaml
+#exec -a stage2  python main.py configs/unet/unet_prostate_picai_f0.yaml
 #exec -a stage2  python main.py configs/unetr/unetr_stage2_picai_f0.yaml
+exec -a stage2  python main.py configs/unetr/unetr_stage2_picai_f0_server79.yaml
 #exec -a stage2_only  python main.py configs/unetr/unetr_stage2_only_picai_f0.yaml
 
