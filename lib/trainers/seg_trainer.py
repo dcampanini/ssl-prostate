@@ -605,6 +605,14 @@ class SegTrainer(BaseTrainer):
                 print('resume model =', args.resume)
                 #import pdb;pdb.set_trace()
                 print(valid_metrics)
+                thr = 0.5
+                acc = valid_metrics.accuracy_at_thr(thr)
+                precision, recall = valid_metrics.calculate_precision_recall_at_thr(thr)
+                gmean = valid_metrics.gmean_at_thr(thr)
+                print(f'Accuracy at thr ({thr}): ', acc)
+                print(f'Sensitivity (precision) at thr ({thr}): ', precision)
+                print(f'G-mean at thr ({thr}): ', gmean)
+                
             except:
                 print('Valid Failed! Printing preds')
                 print(final_det)

@@ -41,7 +41,6 @@ from collections import defaultdict, OrderedDict
 
 from report_guided_annotation import extract_lesion_candidates
 from picai_eval import evaluate
-from trainers.custom_eval_paper import custom_evaluate
 
 
 import torch
