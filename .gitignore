@@ -129,3 +129,5 @@ dmypy.json
 
 # slurm
 slurm*
+# figures 
+metrics/figures
