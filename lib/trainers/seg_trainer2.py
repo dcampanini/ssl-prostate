@@ -11,7 +11,7 @@ import torch
 import torchvision
 import torchvision.transforms as transforms
 import torch.nn.functional as F
-
+import pandas as pd
 import sys
 sys.path.append('..')
 
@@ -269,7 +269,7 @@ class SegTrainer2(BaseTrainer):
                 # build train dataloader
                 if not args.eval_test:
                     """ 
-                   train_transform = get_scratch_train_transforms(args)
+                    train_transform = get_scratch_train_transforms(args)
                     self.dataloader = get_train_loader(args, 
                                                     batch_size=self.batch_size, 
                                                     workers=self.workers, 
@@ -772,81 +772,59 @@ class SegTrainer2(BaseTrainer):
             else:
                 param_group['lr'] = cur_lr
 
-    # def save_best_model(self):
-    #     """Esta funcion evaluará todos los checkpoints y guardara el mejor"""
-    #     args = self.args
-    #     # Compute iterations when resuming
-    #     ckpt_dir = args.ckpt_dir
-    #     best_metric = 0
-    #     others_best = None
-    #     best_metric_checkpoint = ''
-    #     for checkpoint_path in os.listdir(ckpt_dir):
-    #         if checkpoint_path != 'best_model.pth.tar':
-    #             path = os.path.join(ckpt_dir, checkpoint_path)
-    #             # Cargamos el checkpoint
-    #             print('Cargando checkpoint:', path)
-    #             self.resume(resume=path)
-    #             niters = args.start_epoch * self.iters_per_epoch
-    #             epoch = args.start_epoch
-    #             metric_list = self.evaluate(epoch=epoch, niters=niters)
-    #             print('Metric:', metric_list[1].score, metric_list[1].auroc, metric_list[1].AP)
-    #             metric = metric_list[1].score if args.dataset == 'prostate' else metric_list[0]
-    #             if len(metric_list) == 3:
-    #                 ts_metric = metric_list[2]
-    #             elif len(metric_list) == 2 and args.dataset != 'prostate':
-    #                 ts_metric = metric_list[1]
-    #             else:
-    #                 ts_metric = None
-    #             if metric > best_metric:
-    #                 print(f"=> New val best metric: {metric} | Old val best metric: {best_metric}!")
-    #                 best_metric = metric
-    #                 others_best = metric_list[1]
-    #                 best_metric_checkpoint = checkpoint_path
-    #                 print(f'=> Best metric checkpoint: {best_metric_checkpoint}')
-    #                 if ts_metric is not None:
-    #                     print(f"=> New ts best metric: {ts_metric} | Old ts best metric: {best_ts_metric}!")
-    #                     best_ts_metric = ts_metric
-    #                 if not args.multiprocessing_distributed or (args.multiprocessing_distributed and args.rank == 0):
-    #                     self.save_checkpoint(
-    #                         {
-    #                             'epoch': epoch + 1,
-    #                             'arch': args.arch,
-    #                             'state_dict': self.model.state_dict(),
-    #                             'optimizer' : self.optimizer.state_dict(),
-    #                             'scaler': self.scaler.state_dict(), # additional line compared with base imple
-    #                             'metric':metric
-    #                         }, 
-    #                         is_best=False, 
-    #                         filename=f'{args.ckpt_dir}/best_model.pth.tar'
-    #                     )
-    #                     print("=> Finish saving best model.")
-    #             else:
-    #                 print(f"=> Still old val best metric: {best_metric}")
-    #                 print('Others: ', others_best)
-    #                 print(f'=> Best metric checkpoint: {best_metric_checkpoint}')
-    #                 if ts_metric is not None:
-    #                     print(f"=> Still old ts best metric: {best_ts_metric}")
 
-    def evaluate_test(self):
+    def evaluate_test_all(self):
         print('Comenzando Evaluacion...')
         args = self.args
-        models_root_dir = args.models_root_dir
-        models_to_ensemble = args.models_to_ensemble
-        preds = []
-        for model_dir in models_to_ensemble:
-            model_path = os.path.join(models_root_dir, model_dir, 'ckpts', 'best_model.pth.tar')
+        model_final_dir = args.model_final_dir
+        models_name = args.models_to_test[args.fold_id]
+        #preds = []
+        #import pdb;pdb.set_trace()
+        results = []
+        for m in models_name:
+            preds = []
+            model_path = f"{model_final_dir}{m}" 
             print(f'Cargando Checkpoint {model_path}')
             self.resume(resume=model_path)
             final_det, final_target = self.evaluate(get_only_output=True)
             preds.append(final_det)
 
-        ensemble_output = np.mean(preds, axis=0).astype('float32')
-        valid_metrics = evaluate(y_det=iter(ensemble_output),
-                            y_true=iter(final_target),
-                            y_det_postprocess_func=lambda pred: extract_lesion_candidates(pred)[0])
-        print(valid_metrics)
-        valid_metrics.save_full(args.metrics_save_path)
+            ensemble_output = np.mean(preds, axis=0).astype('float32')
+            valid_metrics = evaluate(y_det=iter(ensemble_output),
+                                y_true=iter(final_target),
+                                y_det_postprocess_func=lambda pred: extract_lesion_candidates(pred)[0])
+            print('Metrics for fold_id : ', args.fold_id)
+            print('data_path =',args.data_path)
+            print('overviews_dir =',args.overviews_dir)
+            print('conf_file =',args.conf_file)
+            print('model =',m)
+            #print('resume model =', args.resume)
+            #print(valid_metrics)
+            auroc = round(valid_metrics.auroc,3)
+            ap = round(valid_metrics.AP,3)
+            thr = self.args.metrics_threshold
+            acc = valid_metrics.accuracy_at_thr(thr)
+            precision, recall = valid_metrics.calculate_precision_recall_at_thr(thr)
+            gmean = valid_metrics.gmean_at_thr(thr)
+            print(f'AUROC: {auroc}')
+            print(f'AP: {ap}')
+            print(f'Accuracy at thr ({thr}): ', acc)
+            print(f'Sensitivity (recall) at thr ({thr}): ', recall)
+            print(f'G-mean at thr ({thr}): ', gmean)
 
-        
+            metrics = {
+                "model": m,
+                "acc": acc,
+                "sensitivity": recall,
+                "g-mean": gmean,
+            }
 
-
+            results.extend([
+                {"model": m, "metric": "accuracy",    "value": acc},
+                {"model": m, "metric": "sensitivity", "value": recall},
+                {"model": m, "metric": "g-mean",      "value": gmean},
+            ])
+        df = pd.DataFrame(results)
+        df.to_csv(f"{args.save_path_metrics}/model_metrics_fold{args.fold_id}.csv", index=False)
+            
+        #valid_metrics.save_full(args.metrics_save_path)       

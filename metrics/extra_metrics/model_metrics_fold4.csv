@@ -1,0 +1,4 @@
+model,metric,value
+ssl_prostate_final_models/ssl_original/unetr/stage3/p158/unetr_(2-3)_p158f4/best_model.pth.tar,accuracy,0.905
+ssl_prostate_final_models/ssl_original/unetr/stage3/p158/unetr_(2-3)_p158f4/best_model.pth.tar,sensitivity,0.4
+ssl_prostate_final_models/ssl_original/unetr/stage3/p158/unetr_(2-3)_p158f4/best_model.pth.tar,g-mean,0.624
