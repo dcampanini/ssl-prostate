@@ -4,7 +4,7 @@ enc_arch: ViTBackbone
 dec_arch: UNETR_decoder
 
 # wandb
-proj_name: unetr_stage1_dae_picai50
+proj_name: stage1_unetr_dae_test
 model_name: UNETR3D
 run_name: ${proj_name}
 wandb_id: 
@@ -16,17 +16,15 @@ dataset: prostate
 task: Task2201_picai # dataset de picai 
 #overview_task: Task2210_picai_prostate158_only_negative #Para entrenar denoise
 overview_task: Task2201_picai #Para evaluar
-data_path: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/nnUNet_raw_data/${task}
-# overviews_dir: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/overviews/UNet/overviews/${overview_task}
-# overviews_valid_dir: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/overviews/UNet/overviews/${task}
-overviews_dir: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/overviews/UNet/overviews/Task2201_picai_50
-overviews_valid_dir: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/overviews/UNet/overviews/Task2201_picai_50
+data_path:  /workspace1/project_jxfdv/ssl_prostate_data/nnUNet_raw_data/${task}
+overviews_dir: /workspace1/project_jxfdv/ssl_prostate_data/overviews/UNet/overviews/${overview_task}
+overviews_valid_dir: /workspace1/project_jxfdv/ssl_prostate_data/overviews/UNet/overviews/${task}
 json_list: 'dataset2.json'
 data_seed: 12345
 ts_fold: 0
 
 # output
-output_dir: /mnt/researchers/denis-parra/datasets/ssl_prostate_models_diego/unetr_p158/stage1/${run_name}
+output_dir: /workspace1/project_jxfdv/models/unetr_p158/stage3/${run_name}
 ckpt_dir: ${output_dir}/ckpts
 
 # data preprocessing
@@ -44,7 +42,7 @@ num_channels: 3
 
 # trainer
 trainer_name: DenoiseTrainer
-batch_size: 2 # original 2
+batch_size: 8
 val_batch_size: 1 # per gpu
 vis_batch_size: 1
 start_epoch: 0

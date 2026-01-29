@@ -80,6 +80,7 @@ class DenoiseTrainer(BaseTrainer):
                                             weight_decay=args.weight_decay)
 
     def build_dataloader(self):
+        
         if self.dataloader is None:
             print("=> creating dataloader")
             args = self.args
@@ -136,7 +137,7 @@ class DenoiseTrainer(BaseTrainer):
         args = self.args
         # Compute iterations when resuming
         niters = args.start_epoch * self.iters_per_epoch
-
+        
         for epoch in range(args.start_epoch, args.epochs):
             if args.distributed:
                 self.dataloader.sampler.set_epoch(epoch)
@@ -325,8 +326,7 @@ class DenoiseTrainer(BaseTrainer):
 
            
             vis_grid_hw = images3d_to_grid_alt(vis_tensor, n_group=4, in_chans=args.in_chans)
-            # import pdb
-            # pdb.set_trace()
+
             # vis_grid_hd = patches3d_to_grid(vis_tensor, patch_size=args.patch_size, grid_size=grid_size, in_chans=args.in_chans, hidden_axis='w')
             # vis_grid_wd = patches3d_to_grid(vis_tensor, patch_size=args.patch_size, grid_size=grid_size, in_chans=args.in_chans, hidden_axis='h')
             print(vis_grid_hw.shape)

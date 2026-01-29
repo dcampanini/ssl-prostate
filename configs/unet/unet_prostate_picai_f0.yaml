@@ -5,7 +5,7 @@ dec_arch:
 
 # wandb
 proj_name: UNet
-run_name: unet_(1-2)_dae_picai25
+run_name: unet_(1-2)_dae_picai_f0
 wandb_id: 
 disable_wandb: 0
 wandb_proj: SEG_PICAI
