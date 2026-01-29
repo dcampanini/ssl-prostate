@@ -49,7 +49,7 @@ val_batch_size: 1 # per gpu
 use_test_augmentation: false
 start_epoch: 0
 warmup_epochs: 10
-epochs: 40
+epochs: 100
 workers: 8
 num_threads: ${workers}
 pretrain: 

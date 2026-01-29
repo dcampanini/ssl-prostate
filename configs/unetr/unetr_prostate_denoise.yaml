@@ -90,7 +90,7 @@ weight_decay: 0.05
 # logging
 vis_freq: 1 # log en wandb
 save_freq: 100 # epoch saving
-print_freq: 100 # iteration frequency to print info, only print not log to wandb
+print_freq: 1 # iteration frequency to print info, only print not log to wandb
 
 # distributed processing
 gpu: 0

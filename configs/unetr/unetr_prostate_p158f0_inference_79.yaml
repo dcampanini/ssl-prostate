@@ -1,0 +1,128 @@
+# architecture
+arch: vit_base
+enc_arch: ViTBackbone
+dec_arch: UNETR_decoder
+
+# wandb
+proj_name: UNETR3D
+run_name: none
+wandb_id: 
+disable_wandb: 1
+wandb_proj: SEG_PICAI
+
+# dataset
+dataset: prostate
+# data_path: /data/leizhou/
+task: Task2401_p158_prostate
+data_path:  /home/dcampanini/datasets/ssl_prostate_data/nnUNet_raw_data/${task}
+overviews_dir: /home/dcampanini/datasets/ssl_prostate_data/overviews/UNet/overviews/${task}
+json_list: 'split0.json'
+data_seed: 12345
+augmentation_seeds: [0,1,2,3,4,5,6,7]
+ts_fold: 0
+ts_ratio: 0.
+fold_id: 4
+# stage 3 models
+#resume: /mnt/researchers/denis-parra/datasets/ssl_prostate_models_diego/stage3_p158/unetr_full_dae_p158f0/ckpts/best_model.pth.tar # step 2
+# stage 2 models (only PICAI)
+#resume: /mnt/researchers/denis-parra/datasets/ssl_prostate_models_diego/unetr_p158/stage2/unetr_(1-2)_sclr_mae_picai_f0_12-01-2026_00_57_31/best_model.pth.tar
+resume: /home/dcampanini/ssl_prostate_models_diego/unetr_p158/stage3_p158/unetr_full_dae_p158f4/ckpts/best_model.pth.tar
+metrics_dir: metrics/unetr/stage3_p158/unetr_full_dae_p158f4
+save_roc_data: True # True mean save roc curve data
+metrics_threshold: 0.5
+# output
+output_dir: none
+ckpt_dir: none
+
+# data preprocessing
+roi_x: 32
+roi_y: 256
+roi_z: 256
+RandFlipd_prob: 0.2
+RandRotate90d_prob: 0.2
+RandScaleIntensityd_prob: 0.1
+RandShiftIntensityd_prob: 0.1
+infer_overlap: 0.5
+spatial_dim: 3
+cache_rate: 1.
+num_samples: 1
+image_shape: [32, 256, 256]
+num_channels: 3
+
+# trainer
+trainer_name: SegTrainer
+batch_size: 2
+val_batch_size: 2 # per gpu
+use_test_augmentation: false
+start_epoch: 0
+warmup_epochs: 10
+epochs: 2 # 500 original
+workers: 8
+num_threads: ${workers}
+# model (2,3) dejar pretrain , resume and start_from vacio
+pretrain: 
+#resume: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/final_models_diego/unetr_full_dae_p158f1/ckpts/best_model.pth.tar # step 2
+start_from: 
+save_intermediate: false
+
+# drop
+drop_path: 0.1
+# tricks
+mixup: 0.
+cutmix: 0.
+label_smoothing: 0.
+
+# model
+patch_size: 16
+in_chans: 3
+feature_size: 16
+encoder_embed_dim: 768
+encoder_depth: 12
+encoder_num_heads: 12
+
+# loss
+smooth_nr: 0.0
+smooth_dr: 1e-6
+
+# optimizer
+type: adamw
+lr: 0.011
+beta1: 0.9
+beta2: 0.95 #0.999
+weight_decay: 0.05 #1e-5
+layer_decay: 0.75
+
+# logging
+# vis_freq: 100
+vis_batch_size: 1
+save_freq: 1 # to save the model on disk
+eval_freq: 1
+print_freq: 1
+
+# distributed processing
+gpu: 0
+dist_url: # 'tcp://localhost:10001'
+world_size: 1
+multiprocessing_distributed: false
+dist_backend: nccl
+distributed:
+rank: 0
+ngpus_per_node:
+
+# randomness
+seed:
+
+# debugging
+debug: false
+manual_test: false
+get_best_model: false
+evaluate: true # false to train, true for inference
+
+num_classes: 2
+out_chans: 2
+
+# ensemble testing
+eval_test: false
+models_root_dir: 
+models_to_ensemble: [] # Aqui deben ser los nombres de las run. Solo pueden ser del mismo tipo de arquitectura
+metrics_save_path: 

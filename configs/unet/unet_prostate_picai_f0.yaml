@@ -24,7 +24,7 @@ ts_ratio: 0.
 fold_id: 0
 
 # output
-output_dir: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/models/${run_name}
+output_dir: /mnt/researchers/denis-parra/datasets/ssl_prostate_models_diego/stage2/${run_name}
 ckpt_dir: ${output_dir}/ckpts
 
 # data preprocessing
@@ -52,8 +52,8 @@ warmup_epochs: 10
 epochs: 500
 workers: 8
 num_threads: ${workers}
-pretrain: 
-resume: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/models/unet_mae_picai_seg/ckpts/best_model.pth.tar
+pretrain: /mnt/researchers/denis-parra/datasets/ssl_prostate_models_diego/unet_uc/stage1_dev/unet_stage1_dae_picai25_13-01-2026_16_29_58/checkpoint_0299.pth.tar
+resume: 
 start_from: 
 save_intermediate: false
 
@@ -85,10 +85,10 @@ layer_decay: 0.75
 
 # logging
 # vis_freq: 100
-vis_batch_size: 4
-save_freq: 50
-eval_freq: 50
-print_freq: 3
+vis_batch_size: 1
+save_freq: 1
+eval_freq: 1
+print_freq: 1
 
 # distributed processing
 gpu: 0
@@ -107,7 +107,7 @@ seed:
 debug: false
 manual_test: false
 get_best_model: false
-evaluate: true
+evaluate: false
 
 num_classes: 2
 

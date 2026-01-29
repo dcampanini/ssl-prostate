@@ -39,8 +39,7 @@ from monai.metrics import compute_dice, compute_hausdorff_distance
 
 from collections import defaultdict, OrderedDict
 
-import pdb
-
+import json
 from report_guided_annotation import extract_lesion_candidates
 from picai_eval import evaluate
 
@@ -588,6 +587,7 @@ class SegTrainer(BaseTrainer):
             print(f'==> Evaluating on the {i+1}th batch is finished.')
         
         if args.dataset == 'prostate':
+            #import pdb;pdb.set_trace()
             # Juntamos las preds y las mandamos a evaluate de picai
             try:
                 final_det = np.concatenate([x for x in np.array(all_valid_preds)], axis=0)
@@ -598,7 +598,34 @@ class SegTrainer(BaseTrainer):
                             y_true=iter(final_target),
                             y_det_postprocess_func=lambda pred: extract_lesion_candidates(pred)[0])
                 print('Metrics for fold_id : ', args.fold_id)
-                print(valid_metrics)
+                print('data_path =',args.data_path)
+                print('overviews_dir =',args.overviews_dir)
+                print('conf_file =',args.conf_file)
+                print('resume model =', args.resume)
+                #print(valid_metrics)
+                auroc = round(valid_metrics.auroc,3)
+                ap = round(valid_metrics.AP,3)
+                thr = self.args.metrics_threshold
+                acc = valid_metrics.accuracy_at_thr(thr)
+                precision, recall = valid_metrics.calculate_precision_recall_at_thr(thr)
+                gmean = valid_metrics.gmean_at_thr(thr)
+                print(f'AUROC: {auroc}')
+                print(f'AP: {ap}')
+                print(f'Accuracy at thr ({thr}): ', acc)
+                print(f'Sensitivity (recall) at thr ({thr}): ', recall)
+                print(f'G-mean at thr ({thr}): ', gmean)
+                if args.save_roc_data:
+                    roc_curve_data = valid_metrics.calculate_ROC()
+                    roc_curve_data_json = {
+                        "FPR": roc_curve_data["FPR"].tolist(),     # numpy array → list
+                        "TPR": roc_curve_data["TPR"].tolist(),     # numpy array → list
+                        "AUROC": float(roc_curve_data["AUROC"])    # np.float64 → float
+                    }
+                    save_path = args.metrics_dir
+                    os.makedirs(save_path, exist_ok=True)
+                    with open(f"{save_path}/roc_curve_data.json", "w") as f:
+                        json.dump(roc_curve_data_json, f, indent=4)
+
             except:
                 print('Valid Failed! Printing preds')
                 print(final_det)
@@ -802,7 +829,7 @@ class SegTrainer(BaseTrainer):
                             y_true=iter(final_target),
                             y_det_postprocess_func=lambda pred: extract_lesion_candidates(pred)[0])
         print(valid_metrics)
-        valid_metrics.save_full(args.metrics_save_path)
+        #valid_metrics.save_full(args.metrics_save_path)
 
         
 
