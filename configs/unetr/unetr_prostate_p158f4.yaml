@@ -5,7 +5,7 @@ dec_arch: UNETR_decoder
 
 # wandb
 proj_name: UNETR3D
-run_name: unetr_full_byol_dae_p158f4
+run_name: unetr_(2-3)_p158f4
 wandb_id: 
 disable_wandb: 0
 wandb_proj: UNETR3D_p158
@@ -14,8 +14,8 @@ wandb_proj: UNETR3D_p158
 dataset: prostate
 # data_path: /data/leizhou/
 task: Task2401_p158_prostate
-data_path: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/nnUNet_raw_data/${task}
-overviews_dir: /mnt/researchers/denis-parra/datasets/jfacuse_workdir/overviews/UNet/overviews/${task}
+data_path:  /workspace1/project_jxfdv/ssl_prostate_data/nnUNet_raw_data/${task}
+overviews_dir: /workspace1/project_jxfdv/ssl_prostate_data/overviews/UNet/overviews/${task}
 json_list: 'split0.json'
 data_seed: 12345
 augmentation_seeds: [0,1,2,3,4,5,6,7]
@@ -24,7 +24,7 @@ ts_ratio: 0.
 fold_id: 4
 
 # output
-output_dir: /mnt/researchers/denis-parra/datasets/ssl_prostate_models_diego/stage3_p158/${run_name}
+output_dir: /workspace1/project_jxfdv/models/unetr_p158/stage3/${run_name}
 ckpt_dir: 
 
 # data preprocessing
@@ -54,7 +54,7 @@ workers: 8
 num_threads: ${workers}
 pretrain: 
 resume: 
-start_from: /mnt/researchers/denis-parra/datasets/ssl_prostate_models_diego/stage2/stage2_stage1_unetr_byol_dae_picai_f0_14-11-2025_19_32_14/best_model.pth.tar
+start_from: /workspace1/project_jxfdv/models/unetr_p158/stage2/unetr_stage2_only_picai_f0_08-01-2026_01_01_02/best_model.pth.tar # para modelos (2,3) ; (1,2,3)
 save_intermediate: false
 
 # drop

@@ -5,9 +5,9 @@ dec_arch:
 
 # wandb
 proj_name: UNet
-run_name: unet_contrastive_mae_picai_f0
-wandb_id: tayytuc2
-disable_wandb: 1
+run_name: unet_(1-2)_dae_picai_f0
+wandb_id: 
+disable_wandb: 0
 wandb_proj: SEG_PICAI
 
 # dataset

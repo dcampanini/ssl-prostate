@@ -7,5 +7,5 @@
 module load conda
 conda activate /home/dicampanini/miniconda3/envs/env_sslprostate
 # inference
-#python main.py configs/unetr/unetr_prostate_p158f0_inference_peteroa.yaml
-python main.py configs/unetr/unetr_prostate_uc_f0_inference_peteroa.yaml
+#exec -a inference python main.py configs/unetr/unetr_prostate_p158f0_inference_peteroa.yaml
+exec -a inference python main.py configs/unetr/unetr_prostate_uc_f0_inference_peteroa.yaml
