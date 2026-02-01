@@ -526,7 +526,6 @@ class SegTrainer2(BaseTrainer):
         all_valid_preds, all_valid_labels = [], [] # Esto es solo para prostate
         with torch.no_grad():
             for i, batch_data in enumerate(val_loader):
-                
                 if args.gpu is not None:
                     try:
                         image = batch_data['data'].to(args.gpu, non_blocking=True)
@@ -811,6 +810,7 @@ class SegTrainer2(BaseTrainer):
             print(f'Accuracy at thr ({thr}): ', acc)
             print(f'Sensitivity (recall) at thr ({thr}): ', recall)
             print(f'G-mean at thr ({thr}): ', gmean)
+            #import pdb;pdb.set_trace()
 
             metrics = {
                 "model": m,
