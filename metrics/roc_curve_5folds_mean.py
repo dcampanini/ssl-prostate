@@ -123,10 +123,11 @@ plt.plot([0, 1], [0, 1], linestyle="--", lw=1, color='gray')
 
 plt.xlabel("False Positive Rate", fontsize=16)
 plt.ylabel("True Positive Rate", fontsize=16)
-plt.title("Mean ROC curves for best models - ChiPC", fontsize=16)
+plt.title("Mean ROC curves for best models - ChiPCa", fontsize=16)
 plt.legend(loc='lower right', fontsize=12)
 plt.grid(alpha=0.3)
 
 # Save figure
 plt.savefig(f"{save_fig_path}/roc_curve_uc.pdf", format="pdf", bbox_inches="tight")
 plt.show()
+# %%

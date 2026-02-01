@@ -4,6 +4,7 @@ from .mae3d_trainer import MAE3DTrainer
 from .vit_trainer import VitTrainer
 from .seg_trainer import SegTrainer
 from .seg_trainer2 import SegTrainer2
+from .seg_trainer_mmd_penalty import SegTrainerMMD
 from .denoise_trainer import DenoiseTrainer
 from .contrastive_trainer import ContrastiveTrainer
 from .mae3d_contrastive_trainer import MAE3DContrastiveTrainer
