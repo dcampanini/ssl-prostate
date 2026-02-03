@@ -90,7 +90,7 @@ class FocalLossWithMMD(nn.Module):
     """Focal loss with MMD penalty for regularized fine-tuning."""
 
     def __init__(self, alpha=1, gamma=2, num_classes=2, reduction="sum", 
-                 mmd_weight=0.1, mmd_sigma=1.0):
+                 mmd_weight=0.1, mmd_sigma=10000):
         super(FocalLossWithMMD, self).__init__()
         self.alpha = alpha
         self.gamma = gamma
@@ -110,6 +110,7 @@ class FocalLossWithMMD(nn.Module):
         
         tiled_x = x.expand(x_size, y_size, dim)
         tiled_y = y.expand(x_size, y_size, dim)
+
         
         kernel_input = (tiled_x - tiled_y).pow(2).sum(2)
         return torch.exp(-kernel_input / (2 * sigma ** 2))
@@ -129,7 +130,8 @@ class FocalLossWithMMD(nn.Module):
         x_kernel = self.gaussian_kernel(x, x, self.mmd_sigma)
         y_kernel = self.gaussian_kernel(y, y, self.mmd_sigma)
         xy_kernel = self.gaussian_kernel(x, y, self.mmd_sigma)
-        
+
+
         mmd = x_kernel.mean() + y_kernel.mean() - 2 * xy_kernel.mean()
         return mmd
 
@@ -142,6 +144,7 @@ class FocalLossWithMMD(nn.Module):
             finetuned_features: features from fine-tuning model
         """
         # Compute focal loss
+        import pdb; pdb.set_trace()
         inputs = torch.sigmoid(inputs)
         targets = F.one_hot(targets, num_classes=self.num_classes).float()
         targets = torch.moveaxis(targets, (0, 1, 2, 3, 4), (0, 2, 3, 4, 1))
@@ -250,13 +253,14 @@ class SegTrainerMMD(BaseTrainer):
             args = self.args
             print(f"=> creating model {self.model_name}")
 
+            # Setup loss functions based on dataset
             if args.dataset == 'btcv':
                 args.num_classes = 14
                 self.loss_fn = DiceCELoss(to_onehot_y=True,
-                                          softmax=True,
-                                          squared_pred=True,
-                                          smooth_nr=args.smooth_nr,
-                                          smooth_dr=args.smooth_dr)
+                                        softmax=True,
+                                        squared_pred=True,
+                                        smooth_nr=args.smooth_nr,
+                                        smooth_dr=args.smooth_dr)
                 self.using_custom_focal = False
             elif args.dataset == 'msd_brats':
                 args.num_classes = 3
@@ -271,7 +275,7 @@ class SegTrainerMMD(BaseTrainer):
                 device = 'cuda' if args.gpu else 'cpu'
                 
                 # Check if using MMD
-                use_mmd = getattr(args, 'use_mmd', False)
+                use_mmd = getattr(args, 'use_mmd', True)
                 
                 if use_mmd:
                     print("=> Using Focal Loss with MMD penalty")
@@ -298,7 +302,8 @@ class SegTrainerMMD(BaseTrainer):
                 raise NotImplemented("Mixup for segmentation has not been implemented.")
             else:
                 self.mixup_fn = None
-                
+            
+            # Create model
             if self.model_name == 'UNet':
                 self.model = UNet(
                                 spatial_dims=len(args.image_shape),
@@ -308,11 +313,13 @@ class SegTrainerMMD(BaseTrainer):
                                 channels=args.model_features
                                 )
             else:
-                self.model = getattr(models, self.model_name)(encoder=getattr(networks, args.enc_arch),
-                                                          decoder=getattr(networks, args.dec_arch),
-                                                          args=args)
+                self.model = getattr(models, self.model_name)(
+                    encoder=getattr(networks, args.enc_arch),
+                    decoder=getattr(networks, args.dec_arch),
+                    args=args
+                )
 
-            # load pretrained weights
+            # Load pretrained weights
             print('DEVICES', torch.cuda.device_count())
             if hasattr(args, 'test') and args.test and args.pretrain is not None and os.path.exists(args.pretrain):
                 print(f"=> Start loading the model weights from {args.pretrain} for test")
@@ -321,6 +328,7 @@ class SegTrainerMMD(BaseTrainer):
                 msg = self.model.load_state_dict(state_dict, strict=False)
                 print(f'Loading messages: \n {msg}')
                 print(f"=> Finish loading pretrained weights from {args.pretrain}")
+                
             elif args.pretrain is not None and os.path.exists(args.pretrain):
                 print(f"=> Start loading pretrained weights from {args.pretrain}")
                 checkpoint = torch.load(args.pretrain, map_location='cpu')
@@ -329,13 +337,12 @@ class SegTrainerMMD(BaseTrainer):
                 else:
                     state_dict = checkpoint
                 
-                # Load weights based on model type
+                # Load based on model type
                 if self.model_name == 'UNETR3D' or self.model_name == 'UNETR3DFusion':
                     for key in list(state_dict.keys()):
                         if key.startswith('encoder.'):
                             state_dict[key[len('encoder.'):]] = state_dict[key]
                             del state_dict[key]
-                        # need to concat and load pos embed. too
                         if key == 'encoder_pos_embed':
                             pe = torch.zeros([1, 1, state_dict[key].size(-1)])
                             state_dict['pos_embed'] = torch.cat([pe, state_dict[key]], dim=1)
@@ -348,6 +355,7 @@ class SegTrainerMMD(BaseTrainer):
                             state_dict['pos_embed'].shape != self.model.encoder.pos_embed.shape:
                             del state_dict[key]
                     msg = self.model.encoder.load_state_dict(state_dict, strict=False)
+                    
                 elif self.model_name == 'DynSeg3d':
                     if args.pretrain_load == 'enc+dec':
                         for key in list(state_dict.keys()):
@@ -358,6 +366,7 @@ class SegTrainerMMD(BaseTrainer):
                             if key.startswith('decoder.'):
                                 del state_dict[key]
                     msg = self.model.load_state_dict(state_dict, strict=False)
+                    
                 elif self.model_name == 'UNet':
                     print('Printing keys to remove')
                     for key, value in list(state_dict.items()):
@@ -368,12 +377,17 @@ class SegTrainerMMD(BaseTrainer):
                 
                 print(f'Loading messages: \n {msg}')
                 print(f"=> Finish loading pretrained weights from {args.pretrain}")
+            
+            # CREATE FROZEN MMD REFERENCE MODEL (only if use_mmd is True)
+            if getattr(args, 'use_mmd', True):
+                #mmd_reference_path = getattr(args, 'mmd_reference', None)
+                mmd_reference_path = args.mmd_reference
                 
-                # Create frozen pretrained model for MMD if enabled
-                if getattr(args, 'use_mmd', False):
-                    print("=> Creating frozen pretrained model for MMD regularization")
+                if mmd_reference_path is not None and os.path.exists(mmd_reference_path):
+                    print(f"\n{'='*60}")
+                    print(f"=> Creating frozen reference model for MMD from {mmd_reference_path}")
                     
-                    # Create pretrained model with same architecture
+                    # Create reference model with same architecture
                     if self.model_name == 'UNet':
                         self.pretrained_model = UNet(
                                         spatial_dims=len(args.image_shape),
@@ -389,54 +403,62 @@ class SegTrainerMMD(BaseTrainer):
                             args=args
                         )
                     
-                    # Load same pretrained weights
-                    checkpoint_pretrained = torch.load(args.pretrain, map_location='cpu')
-                    if 'state_dict' in checkpoint_pretrained:
-                        state_dict_pretrained = checkpoint_pretrained['state_dict']
+                    # Load reference weights from mmd_reference
+                    checkpoint_ref = torch.load(mmd_reference_path, map_location='cpu')
+                    if 'state_dict' in checkpoint_ref:
+                        state_dict_ref = checkpoint_ref['state_dict']
                     else:
-                        state_dict_pretrained = checkpoint_pretrained
+                        state_dict_ref = checkpoint_ref
                     
+                    # Process state_dict based on model type
                     if self.model_name == 'UNETR3D' or self.model_name == 'UNETR3DFusion':
-                        for key in list(state_dict_pretrained.keys()):
+                        for key in list(state_dict_ref.keys()):
                             if key.startswith('encoder.'):
-                                state_dict_pretrained[key[len('encoder.'):]] = state_dict_pretrained[key]
-                                del state_dict_pretrained[key]
+                                state_dict_ref[key[len('encoder.'):]] = state_dict_ref[key]
+                                del state_dict_ref[key]
                             if key == 'encoder_pos_embed':
-                                pe = torch.zeros([1, 1, state_dict_pretrained[key].size(-1)])
-                                state_dict_pretrained['pos_embed'] = torch.cat([pe, state_dict_pretrained[key]], dim=1)
-                                del state_dict_pretrained[key]
+                                pe = torch.zeros([1, 1, state_dict_ref[key].size(-1)])
+                                state_dict_ref['pos_embed'] = torch.cat([pe, state_dict_ref[key]], dim=1)
+                                del state_dict_ref[key]
                             if key == 'patch_embed.proj.weight' and \
-                                state_dict_pretrained['patch_embed.proj.weight'].shape != self.pretrained_model.encoder.patch_embed.proj.weight.shape:
-                                del state_dict_pretrained['patch_embed.proj.weight']
-                                del state_dict_pretrained['patch_embed.proj.bias']
+                                'patch_embed.proj.weight' in state_dict_ref and \
+                                state_dict_ref['patch_embed.proj.weight'].shape != self.pretrained_model.encoder.patch_embed.proj.weight.shape:
+                                del state_dict_ref['patch_embed.proj.weight']
+                                del state_dict_ref['patch_embed.proj.bias']
                             if key == 'pos_embed' and \
-                                state_dict_pretrained['pos_embed'].shape != self.pretrained_model.encoder.pos_embed.shape:
-                                del state_dict_pretrained[key]
-                        self.pretrained_model.encoder.load_state_dict(state_dict_pretrained, strict=False)
+                                'pos_embed' in state_dict_ref and \
+                                state_dict_ref['pos_embed'].shape != self.pretrained_model.encoder.pos_embed.shape:
+                                del state_dict_ref[key]
+                        msg_ref = self.pretrained_model.encoder.load_state_dict(state_dict_ref, strict=False)
+                        
                     elif self.model_name == 'DynSeg3d':
                         if args.pretrain_load == 'enc+dec':
-                            for key in list(state_dict_pretrained.keys()):
+                            for key in list(state_dict_ref.keys()):
                                 if key.startswith('decoder.head.') or (key.startswith('decoder.blocks.') and int(key[15]) > 7):
-                                    del state_dict_pretrained[key]
+                                    del state_dict_ref[key]
                         elif args.pretrain_load == 'enc':
-                            for key in list(state_dict_pretrained.keys()):
+                            for key in list(state_dict_ref.keys()):
                                 if key.startswith('decoder.'):
-                                    del state_dict_pretrained[key]
-                        self.pretrained_model.load_state_dict(state_dict_pretrained, strict=False)
+                                    del state_dict_ref[key]
+                        msg_ref = self.pretrained_model.load_state_dict(state_dict_ref, strict=False)
+                        
                     elif self.model_name == 'UNet':
-                        for key, value in list(state_dict_pretrained.items()):
+                        for key in list(state_dict_ref.keys()):
                             if '2' in key:
-                                del state_dict_pretrained[key]
-                        self.pretrained_model.load_state_dict(state_dict_pretrained, strict=False)
+                                del state_dict_ref[key]
+                        msg_ref = self.pretrained_model.load_state_dict(state_dict_ref, strict=False)
                     
-                    # Freeze the pretrained model
+                    print(f'Reference model loading messages: \n {msg_ref}')
+                    
+                    # Freeze the reference model
                     self.pretrained_model.eval()
                     for param in self.pretrained_model.parameters():
                         param.requires_grad = False
                     
-                    # Determine which layer to extract features from
+                    print(f"=> Reference model frozen successfully")
+                    
+                    # Determine feature extraction layer
                     if self.model_name == 'UNETR3D' or self.model_name == 'UNETR3DFusion':
-                        # Options: 'encoder.blocks.11', 'encoder.norm', 'encoder'
                         self.mmd_feature_layer = getattr(args, 'mmd_feature_layer', 'encoder.blocks.11')
                     elif self.model_name == 'DynSeg3d':
                         self.mmd_feature_layer = getattr(args, 'mmd_feature_layer', 'encoder.blocks.11')
@@ -446,11 +468,22 @@ class SegTrainerMMD(BaseTrainer):
                         self.mmd_feature_layer = 'encoder'
                     
                     print(f"=> MMD will use features from layer: {self.mmd_feature_layer}")
+                    print(f"{'='*60}\n")
+                else:
+                    print(f"WARNING: --use_mmd is set but --mmd_reference is not provided or doesn't exist")
+                    if mmd_reference_path is not None:
+                        print(f"         Path: {mmd_reference_path}")
+                    print(f"         MMD will be disabled")
+                    self.pretrained_model = None
+            else:
+                # MMD not requested
+                self.pretrained_model = None
 
+            # Wrap model (must be done before feature extractors)
             self.wrap_model()
             
             # Setup feature extractors after wrapping and GPU transfer
-            if getattr(args, 'use_mmd', False) and self.pretrained_model is not None:
+            if getattr(args, 'use_mmd', True) and self.pretrained_model is not None:
                 # Move pretrained model to GPU
                 if args.gpu is not None:
                     self.pretrained_model = self.pretrained_model.cuda(args.gpu)
@@ -471,16 +504,20 @@ class SegTrainerMMD(BaseTrainer):
                     print("=> Feature extractors created successfully")
                 except Exception as e:
                     print(f"=> Warning: Could not create feature extractors: {e}")
+                    import traceback
+                    traceback.print_exc()
                     print(f"=> MMD will be disabled")
                     self.pretrained_model = None
                     self.feature_extractor = None
                     self.pretrained_feature_extractor = None
+            else:
+                self.feature_extractor = None
+                self.pretrained_feature_extractor = None
                     
         elif self.model_name == 'Unknown':
             raise ValueError("=> Model name is still unknown")
         else:
             raise ValueError("=> Model has been created. Do not create twice")
-        
 
     def build_optimizer(self):
         assert(self.model is not None and self.wrapped_model is not None), \
@@ -622,7 +659,7 @@ class SegTrainerMMD(BaseTrainer):
         
         # Forward pass through fine-tuned model
         outputs = model(samples)
-        
+        #import pdb; pdb.set_trace()
         # Check if using MMD
         if (pretrained_model is not None and 
             isinstance(criterion, FocalLossWithMMD) and
@@ -648,6 +685,7 @@ class SegTrainerMMD(BaseTrainer):
         else:
             # Standard focal loss
             loss = criterion(outputs, target)
+
             return loss, torch.tensor(0.0, device=loss.device), torch.tensor(0.0, device=loss.device)
 
     def epoch_train(self, epoch, niters):
@@ -823,11 +861,7 @@ class SegTrainerMMD(BaseTrainer):
                                                   overlap=args.infer_overlap)
                 target_convert = torch.stack([self.post_label(target_tensor) for target_tensor in decollate_batch(target)], dim=0)
                 output_convert = torch.stack([self.post_pred(output_tensor) for output_tensor in decollate_batch(output)], dim=0)
-            #print('ORIGINAL PRED SHAPE', output.shape)
-            #print('ORIGINAL TARGET SHAPE', target.shape)
-            #print('PRED SHAPE', output_convert.shape)
-            #print('TARGET SHAPE', target_convert.shape)
-            #print('PRED', output_convert)
+
             batch_size = image.size(0)
             idx2label = idx2label_all[args.dataset]
             for metric_name, metric_func in self.metric_funcs.items():

@@ -54,13 +54,15 @@ val_batch_size: 1 # per gpu
 use_test_augmentation: false
 start_epoch: 0
 warmup_epochs: 10
-epochs: 100 # 200 original value, 40 new, 100 for scratch
+epochs: 40 # 200 original value, 40 new, 100 for scratch
 workers: 8
 num_threads: ${workers}
-pretrain: # para modelos (1,3)
+pretrain: #/home/dcampanini/ssl_prostate_final_models/ssl_original/unetr/stage2/unetr_(1-2)_dae_picai_f0/ckpts/best_model.pth.tar  # para modelos (1,3)
 resume:  # no se usa 
 start_from: /home/dcampanini/ssl_prostate_final_models/ssl_original/unetr/stage2/unetr_(1-2)_dae_picai_f0/ckpts/best_model.pth.tar # para modelos (2,3) ; (1,2,3);
 save_intermediate: false
+mmd_reference : /home/dcampanini/ssl_prostate_final_models/ssl_original/unetr/stage2/unetr_(1-2)_dae_picai_f0/ckpts/best_model.pth.tar
+
 
 # drop
 drop_path: 0.1
