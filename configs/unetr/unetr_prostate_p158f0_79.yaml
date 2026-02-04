@@ -5,7 +5,7 @@ dec_arch: UNETR_decoder
 
 # wandb
 proj_name: UNETR3D
-run_name: unetr_full_dae_p158f0_mmd_penalty
+run_name: unetr_(1-3)_dae_p158_mmd_penalty #unetr_full_dae_p158f0_mmd_penalty
 wandb_id: 
 disable_wandb: 1
 wandb_proj: UNETR3D_p158
@@ -57,11 +57,11 @@ warmup_epochs: 10
 epochs: 40 # 200 original value, 40 new, 100 for scratch
 workers: 8
 num_threads: ${workers}
-pretrain: #/home/dcampanini/ssl_prostate_final_models/ssl_original/unetr/stage2/unetr_(1-2)_dae_picai_f0/ckpts/best_model.pth.tar  # para modelos (1,3)
+pretrain: /home/dcampanini/ssl_prostate_final_models/ssl_original/unetr/stage1/unetr_stage1_dae/ckpts/checkpoint_0299.pth.tar # para modelos (1,3)
 resume:  # no se usa 
-start_from: /home/dcampanini/ssl_prostate_final_models/ssl_original/unetr/stage2/unetr_(1-2)_dae_picai_f0/ckpts/best_model.pth.tar # para modelos (2,3) ; (1,2,3);
+start_from: #/home/dcampanini/ssl_prostate_final_models/ssl_original/unetr/stage2/unetr_(1-2)_dae_picai_f0/ckpts/best_model.pth.tar # para modelos (2,3) ; (1,2,3);
 save_intermediate: false
-mmd_reference : /home/dcampanini/ssl_prostate_final_models/ssl_original/unetr/stage2/unetr_(1-2)_dae_picai_f0/ckpts/best_model.pth.tar
+mmd_reference : /home/dcampanini/ssl_prostate_final_models/ssl_original/unetr/stage1/unetr_stage1_dae/ckpts/checkpoint_0299.pth.tar #/home/dcampanini/ssl_prostate_final_models/ssl_original/unetr/stage2/unetr_(1-2)_dae_picai_f0/ckpts/best_model.pth.tar
 
 
 # drop
@@ -82,6 +82,10 @@ encoder_num_heads: 12
 # loss
 smooth_nr: 0.0
 smooth_dr: 1e-6
+
+# mmd penalty parameters
+mmd_weight: 100
+mmd_sigma: 10000 # kernel sigma
 
 # optimizer
 type: adamw

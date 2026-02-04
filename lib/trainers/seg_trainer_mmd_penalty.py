@@ -90,7 +90,7 @@ class FocalLossWithMMD(nn.Module):
     """Focal loss with MMD penalty for regularized fine-tuning."""
 
     def __init__(self, alpha=1, gamma=2, num_classes=2, reduction="sum", 
-                 mmd_weight=0.1, mmd_sigma=10000):
+                 mmd_weight=0.1, mmd_sigma=1.0):
         super(FocalLossWithMMD, self).__init__()
         self.alpha = alpha
         self.gamma = gamma
@@ -101,11 +101,14 @@ class FocalLossWithMMD(nn.Module):
 
     def gaussian_kernel(self, x, y, sigma):
         """RBF/Gaussian kernel."""
-        x_size = x.size(0)
-        y_size = y.size(0)
-        dim = x.size(1)
+        import pdb; pdb.set_trace()
+        x_size = x.size(0) # batch dimension
+        y_size = y.size(0) # batch dimension
+        dim = x.size(1) # dim = 513*768 
         
+        # add dimension 1 at position 1
         x = x.unsqueeze(1)  # (x_size, 1, dim)
+        # add dimension 1 at position 0
         y = y.unsqueeze(0)  # (1, y_size, dim)
         
         tiled_x = x.expand(x_size, y_size, dim)
@@ -122,11 +125,13 @@ class FocalLossWithMMD(nn.Module):
         y: features from finetuned model
         """
         # Flatten spatial dimensions: [B, C, D, H, W] -> [B, C*D*H*W]
+        #for ex x.size() = torch.Size([2, 513, 768])
         if x.dim() > 2:
             x = x.view(x.size(0), -1)
         if y.dim() > 2:
             y = y.view(y.size(0), -1)
         
+        # x.size() = torch.Size([2, 513*768]
         x_kernel = self.gaussian_kernel(x, x, self.mmd_sigma)
         y_kernel = self.gaussian_kernel(y, y, self.mmd_sigma)
         xy_kernel = self.gaussian_kernel(x, y, self.mmd_sigma)
@@ -144,7 +149,6 @@ class FocalLossWithMMD(nn.Module):
             finetuned_features: features from fine-tuning model
         """
         # Compute focal loss
-        import pdb; pdb.set_trace()
         inputs = torch.sigmoid(inputs)
         targets = F.one_hot(targets, num_classes=self.num_classes).float()
         targets = torch.moveaxis(targets, (0, 1, 2, 3, 4), (0, 2, 3, 4, 1))
@@ -167,7 +171,6 @@ class FocalLossWithMMD(nn.Module):
         # Add MMD penalty if features are provided
         total_loss = focal_loss
         mmd_loss = torch.tensor(0.0, device=focal_loss.device)
-        
         if pretrained_features is not None and finetuned_features is not None:
             mmd_loss = self.compute_mmd(pretrained_features, finetuned_features)
             total_loss = focal_loss + self.mmd_weight * mmd_loss
@@ -285,8 +288,8 @@ class SegTrainerMMD(BaseTrainer):
                         gamma=1.0,
                         num_classes=2,
                         reduction="sum",
-                        mmd_weight=getattr(args, 'mmd_weight', 0.1),
-                        mmd_sigma=getattr(args, 'mmd_sigma', 1.0)
+                        mmd_weight=args.mmd_weight,
+                        mmd_sigma=args.mmd_sigma
                     ).to(device)
                 else:
                     print("=> Using standard Focal Loss")
@@ -659,7 +662,6 @@ class SegTrainerMMD(BaseTrainer):
         
         # Forward pass through fine-tuned model
         outputs = model(samples)
-        #import pdb; pdb.set_trace()
         # Check if using MMD
         if (pretrained_model is not None and 
             isinstance(criterion, FocalLossWithMMD) and
