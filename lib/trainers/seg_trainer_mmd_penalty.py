@@ -101,7 +101,7 @@ class FocalLossWithMMD(nn.Module):
 
     def gaussian_kernel(self, x, y, sigma):
         """RBF/Gaussian kernel."""
-        import pdb; pdb.set_trace()
+        #import pdb; pdb.set_trace()
         x_size = x.size(0) # batch dimension
         y_size = y.size(0) # batch dimension
         dim = x.size(1) # dim = 513*768 
@@ -110,12 +110,18 @@ class FocalLossWithMMD(nn.Module):
         x = x.unsqueeze(1)  # (x_size, 1, dim)
         # add dimension 1 at position 0
         y = y.unsqueeze(0)  # (1, y_size, dim)
+
+        # normalize feature vector
+        x = F.normalize(x, dim=1)
+        y = F.normalize(y, dim=1)
+
         
         tiled_x = x.expand(x_size, y_size, dim)
         tiled_y = y.expand(x_size, y_size, dim)
 
         
         kernel_input = (tiled_x - tiled_y).pow(2).sum(2)
+        #import pdb; pdb.set_trace()
         return torch.exp(-kernel_input / (2 * sigma ** 2))
 
     def compute_mmd(self, x, y):
@@ -462,11 +468,11 @@ class SegTrainerMMD(BaseTrainer):
                     
                     # Determine feature extraction layer
                     if self.model_name == 'UNETR3D' or self.model_name == 'UNETR3DFusion':
-                        self.mmd_feature_layer = getattr(args, 'mmd_feature_layer', 'encoder.blocks.11')
+                        self.mmd_feature_layer = args.mmd_feature_layer
                     elif self.model_name == 'DynSeg3d':
-                        self.mmd_feature_layer = getattr(args, 'mmd_feature_layer', 'encoder.blocks.11')
+                        self.mmd_feature_layer = args.mmd_feature_layer
                     elif self.model_name == 'UNet':
-                        self.mmd_feature_layer = getattr(args, 'mmd_feature_layer', 'bottleneck')
+                        self.mmd_feature_layer = args.mmd_feature_layer
                     else:
                         self.mmd_feature_layer = 'encoder'
                     
@@ -495,6 +501,7 @@ class SegTrainerMMD(BaseTrainer):
                 actual_model = self.model.module if hasattr(self.model, 'module') else self.model
                 
                 # Create feature extractors
+                #import pdb;pdb.set_trace()
                 try:
                     self.feature_extractor = FeatureExtractor(
                         actual_model,
@@ -891,7 +898,6 @@ class SegTrainerMMD(BaseTrainer):
             print(f'==> Evaluating on the {i+1}th batch is finished.')
         
         if args.dataset == 'prostate':
-            #import pdb;pdb.set_trace()
             # Juntamos las preds y las mandamos a evaluate de picai
             try:
                 final_det = np.concatenate([x for x in np.array(all_valid_preds)], axis=0)
@@ -958,7 +964,6 @@ class SegTrainerMMD(BaseTrainer):
                     print(f'==> start synchronizing meter {k}...')
                     v.synchronize_between_processes()
                     print(f'==> finish synchronizing meter {k}...')
-        # pdb.set_trace()
         log_string = f"==> Epoch {epoch:04d} val results: \n"
         for k, v in meters.items():
             global_avg_metric = v.global_avg
