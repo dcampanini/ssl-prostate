@@ -15,7 +15,6 @@ def subset(k):
     }
 
 
-#%
 save = False
 train_file = '/home/dcampanini/datasets/ssl_prostate_data/overviews/UNet/overviews/Task2201_picai/PI-CAI_train-fold-0.json'
 

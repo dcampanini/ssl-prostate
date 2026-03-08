@@ -4,7 +4,7 @@ enc_arch: ViTBackbone
 dec_arch: UNETR_decoder
 
 # wandb
-proj_name: stage1_unetr_dae_test
+proj_name: unetr_stage1_dae_picai
 model_name: UNETR3D
 run_name: ${proj_name}
 wandb_id: 
@@ -24,7 +24,7 @@ data_seed: 12345
 ts_fold: 0
 
 # output
-output_dir: /workspace1/project_jxfdv/models/unetr_p158/stage3/${run_name}
+output_dir: /workspace1/project_jxfdv/ssl_prostate_final_models/ssl_original/unetr/stage1/${run_name}
 ckpt_dir: ${output_dir}/ckpts
 
 # data preprocessing

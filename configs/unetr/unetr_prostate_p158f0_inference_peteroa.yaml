@@ -25,7 +25,14 @@ fold_id: 4
 # stage 3 models
 #resume: /mnt/researchers/denis-parra/datasets/ssl_prostate_models_diego/stage3_p158/unetr_full_dae_p158f0/ckpts/best_model.pth.tar # step 2
 # stage 2 models (only PICAI)
-resume: /workspace1/project_jxfdv/models/unetr_p158/stage3/unetr_(2-3)_p158f4_10-01-2026_00_41_50/best_model.pth.tar
+resume: /workspace1/project_jxfdv/ssl_prostate_final_models/dev/mmd_penalty/stage3/p158/unetr_full_dae_mmd_penalty_p158f4_04-02-2026_22_11_27/best_model.pth.tar
+
+# path to save metrics
+metrics_dir: metrics/unetr/stage3_p158/unetr_full_dae_p158f4
+save_roc_data: False # True mean save roc curve data
+metrics_threshold: 0.5
+
+
 # output
 output_dir: none
 ckpt_dir: none

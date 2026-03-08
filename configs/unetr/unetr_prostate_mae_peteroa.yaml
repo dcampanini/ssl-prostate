@@ -4,11 +4,12 @@ enc_arch: MAEViTEncoder
 dec_arch: MAEViTDecoder
 
 # wandb
-proj_name: unetr_stage1_mae_picai25
+proj_name: unetr_stage1_mae_picai
 run_name: ${proj_name}
 wandb_id:
-disable_wandb: 0
 wandb_proj: 
+disable_wandb: 0
+
 
 # dataset
 dataset: prostate
@@ -16,14 +17,18 @@ task: Task2201_picai
 overview_task: Task2201_picai
 # data_path:  /workspace1/project_jxfdv/ssl_prostate_data/nnUNet_raw_data/${task}
 # overviews_dir: /workspace1/project_jxfdv/ssl_prostate_data/overviews/UNet/overviews/${task}
-overviews_dir: /workspace1/project_jxfdv/ssl_prostate_data/overviews/UNet/overviews/Task2201_picai_25
-overviews_valid_dir: /workspace1/project_jxfdv/ssl_prostate_data/overviews/UNet/overviews/Task2201_picai_25
+overviews_dir: /workspace1/project_jxfdv/ssl_prostate_data/overviews/UNet/overviews/Task2201_picai
+overviews_valid_dir: /workspace1/project_jxfdv/ssl_prostate_data/overviews/UNet/overviews/Task2201_picai
 json_list: 'dataset2.json'
 data_seed: 12345
 ts_fold: 0
 
+metrics_dir: 
+save_roc_data: False # True mean save roc curve data
+metrics_threshold: 0.5
+
 # output
-output_dir: /workspace1/project_jxfdv/models/unetr/stage1/${run_name}
+output_dir: /workspace1/project_jxfdv/ssl_prostate_final_models/ssl_original/unetr/stage1/${run_name}
 ckpt_dir: ${output_dir}/ckpts
 
 # data preprocessing
@@ -82,7 +87,7 @@ weight_decay: 0.05
 
 # logging
 vis_freq: 1
-save_freq: 1
+save_freq: 100
 print_freq: 1
 
 # distributed processing

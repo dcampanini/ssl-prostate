@@ -6,5 +6,5 @@
 #SBATCH --gpus=1                                # Ask for 1 GPU
 module load conda
 conda activate /home/dicampanini/miniconda3/envs/env_sslprostate
-python main.py configs/unetr/unetr_prostate_mae_peteroa.yaml
-#python main.py configs/unetr/unetr_prostate_denoise.yaml
+#python main.py configs/unetr/unetr_prostate_mae_peteroa.yaml
+python main.py configs/unetr/unetr_prostate_denoise.yaml
